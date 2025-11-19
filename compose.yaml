@@ -1,0 +1,11 @@
+services:
+  mai_oop:
+    build: .
+    stdin_open: true
+    tty: true
+    command: sleep infinity
+    develop:
+      watch:
+         - action: sync
+           path: .
+           target: /workspace
