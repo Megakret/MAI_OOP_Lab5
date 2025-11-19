@@ -20,8 +20,9 @@ enable_testing()
 
 #include headers here
 set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/includes)
-target_include_directories(some_lib PRIVATE ${INCLUDES})
+#target_include_directories(some_lib PRIVATE ${INCLUDES})
 #link tests here
-target_link_libraries(tests lib_to_test GTest::gtest_main)
+#target_link_libraries(tests lib_to_test GTest::gtest_main)
+add_subdirectory(src/vector)
 include(GoogleTest)
-gtest_discover_tests(tests)
+#gtest_discover_tests(tests)
