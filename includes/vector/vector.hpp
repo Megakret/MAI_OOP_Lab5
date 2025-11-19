@@ -3,6 +3,7 @@
 #include <concepts>
 #include <cstddef>
 #include <initializer_list>
+#include <memory>
 #include <type_traits>
 
 namespace vector {
@@ -10,27 +11,31 @@ template <typename T>
 concept Escapable =
     (std::is_nothrow_move_constructible_v<T> || std::copy_constructible<T>);
 
-template <typename T> class Vector {
+template <typename T, typename Allocator = std::pmr::polymorphic_allocator<T>>
+class Vector {
 private:
   std::size_t size_;
   std::size_t capacity_;
+  Allocator allocator_;
   T *arr_;
 
 public:
   Vector();
-  explicit Vector(std::size_t size)
+  explicit Vector(std::size_t size, const Allocator &allocator = Allocator())
     requires std::is_default_constructible_v<T>;
-  Vector(std::size_t size, const T &value)
+  Vector(std::size_t size, const T &value,
+         const Allocator &allocator = Allocator())
     requires std::copy_constructible<T>;
-  Vector(const std::initializer_list<T> &);
+  Vector(const std::initializer_list<T> &,
+         const Allocator &allocator = Allocator());
   Vector(const Vector &)
     requires std::copy_constructible<T>;
-  Vector &operator=(const Vector<T> &)
+  Vector &operator=(const Vector<T, Allocator> &)
     requires std::copy_constructible<T>;
-  Vector(Vector<T> &&) noexcept;
-  Vector &operator=(Vector<T> &&) noexcept;
+  Vector(Vector<T, Allocator> &&) noexcept;
+  Vector &operator=(Vector<T, Allocator> &&) noexcept;
   ~Vector();
-  void Swap(Vector<T> &) noexcept;
+  void Swap(Vector<T, Allocator> &) noexcept;
   T &operator[](std::size_t idx) noexcept;
   const T &operator[](std::size_t idx) const noexcept;
   T &At(std::size_t idx);
