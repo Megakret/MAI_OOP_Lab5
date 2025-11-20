@@ -3,7 +3,7 @@
 #include <concepts>
 #include <cstddef>
 #include <initializer_list>
-#include <memory>
+#include <iterator>
 #include <type_traits>
 
 namespace vector {
@@ -65,6 +65,100 @@ private:
   void ReserveInternal(std::size_t new_capacity);
   template <typename U> void PushBackInternal(U &&value);
   template <typename U> void InsertInternal(std::size_t idx, U &&value);
+
+private:
+  template <bool IsConst> class Iterator {
+  public:
+    using iterator_category = std::random_access_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = T;
+    using pointer_type = std::conditional_t<IsConst, const T *, T *>;
+    using reference_type = std::conditional_t<IsConst, const T &, T &>;
+    Iterator() : ptr_(nullptr) {}
+    Iterator(T *ptr) : ptr_(ptr) {}
+    Iterator(const Iterator &other) : ptr_(other.ptr_) {}
+    Iterator &operator=(const Iterator &other) {
+      ptr_ = other.ptr_;
+      return (*this);
+    }
+    reference_type operator*() const { return *ptr_; }
+    pointer_type operator->() { return ptr_; }
+    Iterator &operator++() {
+      ptr_++;
+      return *this;
+    }
+    Iterator operator++(int) {
+      Iterator copy = *this;
+      ++copy;
+      return copy;
+    }
+    Iterator &operator--() {
+      ptr_--;
+      return *this;
+    }
+    Iterator operator--(int) {
+      Iterator copy(*this);
+      --copy;
+      return copy;
+    }
+    friend bool operator==(const Iterator a, const Iterator b) {
+      return a.ptr_ == b.ptr_;
+    }
+    friend bool operator!=(const Iterator a, const Iterator b) {
+      return !(a == b);
+    }
+    Iterator &operator+=(const difference_type diff) {
+      ptr_ += diff;
+      return *this;
+    }
+    friend Iterator operator+(const Iterator a, const difference_type diff) {
+      Iterator copy(a);
+      copy += diff;
+      return copy;
+    }
+    friend Iterator operator+(const difference_type diff, const Iterator b) {
+      return b + diff;
+    }
+    Iterator &operator-=(const difference_type diff) {
+      ptr_ -= diff;
+      return *this;
+    }
+    friend Iterator operator-(const Iterator a, difference_type diff) {
+      Iterator copy(a);
+      copy -= diff;
+      return copy;
+    }
+    difference_type operator-(const Iterator other) const {
+      return ptr_ - other.ptr_;
+    }
+    reference_type operator[](const difference_type diff) const {
+      return ptr_[diff];
+    }
+    friend bool operator<(const Iterator a, const Iterator b) {
+      return a.ptr_ < b.ptr_;
+    }
+    friend bool operator>(const Iterator a, const Iterator b) {
+      return a.ptr_ > b.ptr_;
+    }
+    friend bool operator<=(const Iterator a, const Iterator b) {
+      return !(a > b);
+    }
+    friend bool operator>=(const Iterator a, const Iterator b) {
+      return !(a < b);
+    }
+
+  private:
+    T *ptr_;
+  };
+
+public:
+  using iterator = Iterator<false>;
+  using const_iterator = Iterator<true>;
+  iterator Begin() { return Iterator<false>(arr_); }
+  iterator End() { return Iterator<false>(arr_ + size_); }
+  const_iterator CBegin() const { return Iterator<true>(arr_); }
+  const_iterator CEnd() const { return Iterator<true>(arr_ + size_); }
 };
+static_assert(std::random_access_iterator<Vector<int>::iterator>);
 }; // namespace vector
 #include <vector/vector.ipp>
