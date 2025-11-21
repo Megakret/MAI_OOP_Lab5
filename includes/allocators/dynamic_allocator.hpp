@@ -5,12 +5,12 @@
 
 namespace allocators {
 
-class DynamicAllocator : public std::pmr::memory_resource {
+class DynamicMemoryResource : public std::pmr::memory_resource {
 public:
-  DynamicAllocator() noexcept;
-  DynamicAllocator(const DynamicAllocator &allocator) = delete;
-  DynamicAllocator(DynamicAllocator &&allocator) noexcept;
-  ~DynamicAllocator() override;
+  DynamicMemoryResource() noexcept;
+  DynamicMemoryResource(const DynamicMemoryResource &allocator) = delete;
+  DynamicMemoryResource(DynamicMemoryResource &&allocator) noexcept;
+  ~DynamicMemoryResource() override;
 
 private:
   void *do_allocate(std::size_t size, std::size_t alignment) override final;
@@ -24,9 +24,9 @@ private:
     char *data;
     std::size_t size;
   };
-	friend bool operator==(const BlockData& a, const BlockData& b);
+  friend bool operator==(const BlockData &a, const BlockData &b);
   std::list<BlockData> occupied_blocks_;
   std::list<BlockData> free_blocks_;
-	std::list<BlockData> all_blocks_;
+  std::list<BlockData> all_blocks_;
 };
 } // namespace allocators

@@ -5,7 +5,7 @@
 
 class VectorInt : public ::testing::Test {
 protected:
-  allocators::DynamicAllocator allocator_;
+  allocators::DynamicMemoryResource allocator_;
   vector::Vector<int, std::pmr::polymorphic_allocator<int>> v;
   VectorInt()
       : v(vector::Vector<int, std::pmr::polymorphic_allocator<int>>(
@@ -20,7 +20,7 @@ protected:
   friend bool operator==(const SomeStruct &a, const SomeStruct &b) {
     return a.x == b.x && a.y == b.y;
   }
-  allocators::DynamicAllocator allocator_;
+  allocators::DynamicMemoryResource allocator_;
   vector::Vector<SomeStruct, std::pmr::polymorphic_allocator<SomeStruct>> v;
   VectorStruct()
       : v(vector::Vector<SomeStruct,
