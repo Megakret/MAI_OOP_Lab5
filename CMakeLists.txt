@@ -24,5 +24,6 @@ set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/includes)
 #link tests here
 #target_link_libraries(tests lib_to_test GTest::gtest_main)
 add_subdirectory(src/vector)
+add_subdirectory(src/allocators)
 include(GoogleTest)
 #gtest_discover_tests(tests)
