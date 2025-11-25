@@ -1,0 +1,5 @@
+add_executable(allocator_test allocator_test.cpp)
+target_include_directories(allocator_test PRIVATE ${INCLUDES})
+add_library(dynamic_allocator_lib dynamic_allocator.cpp)
+target_include_directories(dynamic_allocator_lib PRIVATE ${INCLUDES})
+target_link_libraries(allocator_test dynamic_allocator_lib GTest::gtest_main)
